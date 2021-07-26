@@ -7,15 +7,21 @@ class TaskCard extends StatelessWidget {
   late bool _isActive;
   late Color _categoryColor;
   late String _title;
+  late void Function() _onTap;
+  late void Function() _onRemoveTask;
 
   TaskCard({
     required bool isActive,
     required Color categoryColor,
     required String title,
+    required void Function() onTap,
+    required void Function() onRemoveTask,
   }) {
     this._isActive = isActive;
     this._categoryColor = categoryColor;
     this._title = title;
+    this._onTap = onTap;
+    this._onRemoveTask = onRemoveTask;
   }
 
   @override
@@ -111,16 +117,16 @@ class TaskCard extends StatelessWidget {
                 ),
               ],
             ),
-            onTap: () {},
+            onTap: _onTap,
           ),
         ),
       ),
-      actions: <Widget>[
+      secondaryActions: <Widget>[
         IconSlideAction(
           caption: 'Delete',
           color: Colors.red[400],
           icon: Icons.delete,
-          onTap: () {},
+          onTap: _onRemoveTask,
         ),
       ],
     );

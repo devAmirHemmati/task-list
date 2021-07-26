@@ -6,42 +6,135 @@ import 'package:my/components/category_card.dart';
 import 'package:my/components/grid_view_deligate_height.dart';
 import 'package:my/components/task_card.dart';
 import 'package:my/constants.dart';
+import 'package:my/model/category_model.dart';
+import 'package:my/model/task_model.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late List<CategoryModel> categories = [];
+  late List<TaskModel> tasks = [];
+  late bool isActiveFib = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    setState(() {
+      categories = [
+        CategoryModel(
+          title: "Inbox",
+          lengths: 1,
+          color: HexColor("#61DEA4"),
+        ),
+        CategoryModel(
+          title: "Shopping",
+          lengths: 4,
+          color: HexColor("#B678FF"),
+        ),
+        CategoryModel(
+          title: "Family",
+          lengths: 3,
+          color: HexColor("#F45E6D"),
+        ),
+        CategoryModel(
+          title: "Personal",
+          lengths: 19,
+          color: HexColor("#FFE761"),
+        ),
+      ];
+
+      tasks = [
+        TaskModel(
+          title: "Start making a presentation",
+          isActive: false,
+          categoryColor: categories[0].color,
+        ),
+        TaskModel(
+          title: "Start making",
+          isActive: false,
+          categoryColor: categories[0].color,
+        ),
+        TaskModel(
+          title: "Start Reading",
+          isActive: false,
+          categoryColor: categories[0].color,
+        ),
+        TaskModel(
+          title: "Start making a presentation",
+          isActive: false,
+          categoryColor: categories[0].color,
+        ),
+      ];
+    });
+  }
+
   Future<bool> _handleWillPop() async {
     exit(0);
   }
 
+  void _handleSwitchActiveTask(int index) {
+    setState(() {
+      tasks[index].isActive = !tasks[index].isActive;
+    });
+  }
+
+  void _handleDeleteTask(int index) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+    TaskModel removedTask = tasks[index];
+
+    setState(() {
+      tasks.removeAt(index);
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      duration: Duration(seconds: 3),
+      content: ElevatedButton(
+        onPressed: () {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+          setState(() {
+            tasks.insert(index, removedTask);
+            ScaffoldMessenger.of(context);
+          });
+        },
+        child: Text(
+          "undo",
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+      ),
+    ));
+  }
+
+  void _handleSwitchActiveFib() {
+    setState(() {
+      isActiveFib = !isActiveFib;
+    });
+  }
+
   Widget _NewestTodo() {
-    return Column(
-      children: [
-        TaskCard(
-          categoryColor: Colors.deepOrange,
-          isActive: true,
-          title:
-              "please done my tasks please done my tasks please done my tasks please done my tasks tasks please done my tasks please done my tasks",
-        ),
-        TaskCard(
-          categoryColor: Colors.deepOrange,
-          isActive: false,
-          title: "please done my tasks",
-        ),
-        TaskCard(
-          categoryColor: Colors.deepOrange,
-          isActive: false,
-          title: "please done my tasks",
-        ),
-      ],
+    return ListView.builder(
+      itemCount: tasks.length,
+      shrinkWrap: true,
+      itemBuilder: (BuildContext context, int index) {
+        return TaskCard(
+          categoryColor: tasks[index].categoryColor,
+          isActive: tasks[index].isActive,
+          title: tasks[index].title,
+          onTap: () => {_handleSwitchActiveTask(index)},
+          onRemoveTask: () => {_handleDeleteTask(index)},
+        );
+      },
     );
   }
 
   Widget _CategoryList(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-
-    /*24 is for notification bar on Android*/
-    final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
-    final double itemWidth = size.width + size.width;
-
     return Container(
       alignment: Alignment.topLeft,
       padding: EdgeInsets.only(
@@ -68,7 +161,7 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           GridView.builder(
-            itemCount: 4,
+            itemCount: categories.length,
             shrinkWrap: true,
             gridDelegate:
                 SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
@@ -79,9 +172,9 @@ class HomeScreen extends StatelessWidget {
             ),
             itemBuilder: (BuildContext context, int index) {
               return CategoryCard(
-                color: HexColor("#61DEA4"),
-                title: "Inbox",
-                lengths: 2,
+                color: categories[index].color,
+                title: categories[index].title,
+                lengths: categories[index].lengths,
               );
             },
           )
@@ -92,35 +185,58 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
     return WillPopScope(
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: Padding(
-            padding: EdgeInsets.only(left: 30),
-            child: Text(
-              "Newest Todo",
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 25,
-              ),
-            ),
-          ),
-          backgroundColor: Colors.white,
-          elevation: 0,
-        ),
-        body: ListView(
+        body: Stack(
+          alignment: Alignment.bottomRight,
           children: [
-            _NewestTodo(),
-            _CategoryList(context),
+            ListView(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 30, bottom: 10, top: 20),
+                  child: Text(
+                    "Newest Todo",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25,
+                    ),
+                  ),
+                ),
+                _NewestTodo(),
+                _CategoryList(context),
+              ],
+            ),
+            isActiveFib
+                ? Container(
+                    width: size.width,
+                    height: size.height,
+                    color: Colors.white.withOpacity(0.7),
+                  )
+                : Container(),
+            isActiveFib
+                ? Positioned(
+                    child: Container(
+                      width: 220,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    bottom: 80,
+                    right: 15,
+                  )
+                : Container(),
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: _handleSwitchActiveFib,
           child: Icon(
-            Icons.add,
+            isActiveFib ? Icons.remove : Icons.add,
             color: HexColor(
               THEME_COLORS['primary-1'],
             ),

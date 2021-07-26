@@ -28,7 +28,7 @@ class CategoryCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Inbox",
+              _title,
               style: TextStyle(
                 fontSize: 19,
                 fontWeight: FontWeight.w500,
