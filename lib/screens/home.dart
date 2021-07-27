@@ -8,6 +8,9 @@ import 'package:my/components/task_card.dart';
 import 'package:my/constants.dart';
 import 'package:my/model/category_model.dart';
 import 'package:my/model/task_model.dart';
+import 'package:my/screens/details_category.dart';
+import 'package:my/screens/new_category.dart';
+import 'package:my/screens/new_task.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -26,21 +29,25 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       categories = [
         CategoryModel(
+          id: 'a',
           title: "Inbox",
           lengths: 1,
           color: HexColor("#61DEA4"),
         ),
         CategoryModel(
+          id: 'b',
           title: "Shopping",
           lengths: 4,
           color: HexColor("#B678FF"),
         ),
         CategoryModel(
+          id: 'c',
           title: "Family",
           lengths: 3,
           color: HexColor("#F45E6D"),
         ),
         CategoryModel(
+          id: 'd',
           title: "Personal",
           lengths: 19,
           color: HexColor("#FFE761"),
@@ -49,26 +56,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
       tasks = [
         TaskModel(
+          id: 'a',
           title: "Start making a presentation",
           isActive: false,
           categoryColor: categories[0].color,
         ),
         TaskModel(
+          id: 'b',
           title: "Start making",
           isActive: false,
           categoryColor: categories[0].color,
         ),
         TaskModel(
+          id: 'c',
           title: "Start Reading",
           isActive: false,
           categoryColor: categories[0].color,
         ),
         TaskModel(
+          id: 'd',
           title: "Start making a presentation",
           isActive: false,
           categoryColor: categories[0].color,
         ),
       ];
+    });
+  }
+
+  void _addNewCategoryHandler(CategoryModel newCategory) {
+    setState(() {
+      categories.add(newCategory);
     });
   }
 
@@ -113,9 +130,52 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _handleSwitchActiveFib() {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
     setState(() {
       isActiveFib = !isActiveFib;
     });
+  }
+
+  void _navigateToDetailsCategory(int index) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return DetailsCategoryScreen(
+            cateogry: categories[index],
+          );
+        },
+      ),
+    );
+  }
+
+  void _navigateToNewCategory() {
+    _handleSwitchActiveFib();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return NewCategoryScreen(
+            addNewCategory: _addNewCategoryHandler,
+          );
+        },
+      ),
+    );
+  }
+
+  void _navigateToNewTask() {
+    _handleSwitchActiveFib();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return NewTaskScreen();
+        },
+      ),
+    );
   }
 
   Widget _NewestTodo() {
@@ -124,6 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
       shrinkWrap: true,
       itemBuilder: (BuildContext context, int index) {
         return TaskCard(
+          id: tasks[index].id,
           categoryColor: tasks[index].categoryColor,
           isActive: tasks[index].isActive,
           title: tasks[index].title,
@@ -171,10 +232,15 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 100,
             ),
             itemBuilder: (BuildContext context, int index) {
-              return CategoryCard(
-                color: categories[index].color,
-                title: categories[index].title,
-                lengths: categories[index].lengths,
+              return GestureDetector(
+                onTap: () {
+                  _navigateToDetailsCategory(index);
+                },
+                child: CategoryCard(
+                  color: categories[index].color,
+                  title: categories[index].title,
+                  lengths: categories[index].lengths,
+                ),
               );
             },
           )
@@ -211,19 +277,87 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             isActiveFib
-                ? Container(
-                    width: size.width,
-                    height: size.height,
-                    color: Colors.white.withOpacity(0.7),
+                ? GestureDetector(
+                    onTap: _handleSwitchActiveFib,
+                    child: Container(
+                      width: size.width,
+                      height: size.height,
+                      color: Colors.black.withOpacity(0.3),
+                    ),
                   )
                 : Container(),
             isActiveFib
                 ? Positioned(
                     child: Container(
-                      width: 220,
-                      height: 120,
+                      child: Column(
+                        children: [
+                          GestureDetector(
+                            onTap: _navigateToNewTask,
+                            child: Container(
+                              width: 220,
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: Colors.black.withOpacity(0.1),
+                                    style: BorderStyle.solid,
+                                    width: 1,
+                                  ),
+                                ),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 19,
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.check_box,
+                                    color: Colors.blue,
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 13),
+                                  ),
+                                  Text(
+                                    "New Task",
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: _navigateToNewCategory,
+                            child: Container(
+                              width: 220,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 19,
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.list,
+                                    color: Colors.blue,
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 13),
+                                  ),
+                                  Text(
+                                    "New Category",
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                       decoration: BoxDecoration(
-                        color: Colors.grey,
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),

@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:my/constants.dart';
+import 'package:my/model/task_model.dart';
+import 'package:my/screens/new_task.dart';
 
 class TaskCard extends StatelessWidget {
+  late String _id;
   late bool _isActive;
   late Color _categoryColor;
   late String _title;
@@ -11,12 +14,14 @@ class TaskCard extends StatelessWidget {
   late void Function() _onRemoveTask;
 
   TaskCard({
+    required String id,
     required bool isActive,
     required Color categoryColor,
     required String title,
     required void Function() onTap,
     required void Function() onRemoveTask,
   }) {
+    this._id = id;
     this._isActive = isActive;
     this._categoryColor = categoryColor;
     this._title = title;
@@ -122,6 +127,28 @@ class TaskCard extends StatelessWidget {
         ),
       ),
       secondaryActions: <Widget>[
+        IconSlideAction(
+          caption: 'Edit',
+          color: Colors.blue,
+          icon: Icons.edit,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) {
+                  return NewTaskScreen(
+                    task: TaskModel(
+                      id: this._id,
+                      title: this._title,
+                      isActive: this._isActive,
+                      categoryColor: this._categoryColor,
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        ),
         IconSlideAction(
           caption: 'Delete',
           color: Colors.red[400],
