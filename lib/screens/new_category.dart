@@ -72,7 +72,6 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
     CategoryModel newCategory = CategoryModel(
       id: id,
       color: color,
-      lengths: 0,
       title: categoryName,
     );
 

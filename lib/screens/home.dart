@@ -31,25 +31,21 @@ class _HomeScreenState extends State<HomeScreen> {
         CategoryModel(
           id: 'a',
           title: "Inbox",
-          lengths: 1,
           color: HexColor("#61DEA4"),
         ),
         CategoryModel(
           id: 'b',
           title: "Shopping",
-          lengths: 4,
           color: HexColor("#B678FF"),
         ),
         CategoryModel(
           id: 'c',
           title: "Family",
-          lengths: 3,
           color: HexColor("#F45E6D"),
         ),
         CategoryModel(
           id: 'd',
           title: "Personal",
-          lengths: 19,
           color: HexColor("#FFE761"),
         ),
       ];
@@ -59,25 +55,25 @@ class _HomeScreenState extends State<HomeScreen> {
           id: 'a',
           title: "Start making a presentation",
           isActive: false,
-          categoryColor: categories[0].color,
+          category: categories.first,
         ),
         TaskModel(
           id: 'b',
           title: "Start making",
           isActive: false,
-          categoryColor: categories[0].color,
+          category: categories.first,
         ),
         TaskModel(
           id: 'c',
           title: "Start Reading",
           isActive: false,
-          categoryColor: categories[0].color,
+          category: categories.first,
         ),
         TaskModel(
           id: 'd',
           title: "Start making a presentation",
           isActive: false,
-          categoryColor: categories[0].color,
+          category: categories.first,
         ),
       ];
     });
@@ -90,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<bool> _handleWillPop() async {
+    return false;
     exit(0);
   }
 
@@ -127,6 +124,19 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     ));
+  }
+
+  void _handleAddNewTask(TaskModel newTask) {
+    setState(() {
+      var findTaskIndex = tasks.indexWhere((task) => task.id == newTask.id);
+
+      if (findTaskIndex == -1) {
+        tasks.add(newTask);
+        return;
+      }
+
+      tasks[findTaskIndex] = newTask;
+    });
   }
 
   void _handleSwitchActiveFib() {
@@ -172,7 +182,11 @@ class _HomeScreenState extends State<HomeScreen> {
       context,
       MaterialPageRoute(
         builder: (BuildContext context) {
-          return NewTaskScreen();
+          return NewTaskScreen(
+            categories: categories,
+            addNewTask: _handleAddNewTask,
+            tasks: tasks,
+          );
         },
       ),
     );
@@ -184,12 +198,15 @@ class _HomeScreenState extends State<HomeScreen> {
       shrinkWrap: true,
       itemBuilder: (BuildContext context, int index) {
         return TaskCard(
+          tasks: tasks,
+          categories: categories,
           id: tasks[index].id,
-          categoryColor: tasks[index].categoryColor,
+          category: tasks[index].category,
           isActive: tasks[index].isActive,
           title: tasks[index].title,
           onTap: () => {_handleSwitchActiveTask(index)},
           onRemoveTask: () => {_handleDeleteTask(index)},
+          addNewTask: _handleAddNewTask,
         );
       },
     );
@@ -239,7 +256,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: CategoryCard(
                   color: categories[index].color,
                   title: categories[index].title,
-                  lengths: categories[index].lengths,
+                  lengths: tasks
+                      .where((task) => task.category.id == categories[index].id)
+                      .length,
                 ),
               );
             },
