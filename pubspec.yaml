@@ -32,6 +32,12 @@ dependencies:
   hexcolor: ^2.0.4
   uuid: ^3.0.4
   sqflite: ^2.0.0+3
+  flutter_launcher_icons: ^0.9.1
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/icon.jpg"
 
 dev_dependencies:
   flutter_test:

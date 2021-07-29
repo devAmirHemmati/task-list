@@ -24,10 +24,20 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _initStateHandlers() async {
     List<CategoryModel> sqlCategroies = await _getAllCategroiesFromDatabase();
-    List<TaskModel> sqlTasks = await _getAllTasksFromDatabase(sqlCategroies);
+
+    List<CategoryModel> allCategories = [
+      CategoryModel(
+        id: 'inbox-category-id',
+        title: 'Inbox',
+        color: '#20bf6b',
+      ),
+      ...sqlCategroies
+    ];
+
+    List<TaskModel> sqlTasks = await _getAllTasksFromDatabase(allCategories);
 
     setState(() {
-      categories = sqlCategroies;
+      categories = allCategories;
       tasks = sqlTasks;
     });
 

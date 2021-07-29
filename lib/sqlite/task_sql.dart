@@ -15,7 +15,7 @@ class TaskSql {
 
   Future open() async {
     db = await openDatabase(
-      'task_list_ba0cbe7a_f081_11eb_9a03_0242ac130004.db',
+      'todo_list_hemmati_task_table_app.db',
       version: 1,
       onCreate: (
         Database db,

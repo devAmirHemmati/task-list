@@ -43,17 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-
-    setState(() {
-      categories = [
-        CategoryModel(
-          id: 'inbox-category-id',
-          title: 'Inbox',
-          color: '#20bf6b',
-        ),
-        ...categories,
-      ];
-    });
   }
 
   void _addNewCategoryHandler(CategoryModel newCategory) async {
@@ -84,7 +73,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<bool> _handleWillPop() async {
-    return false;
     exit(0);
   }
 
