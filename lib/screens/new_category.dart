@@ -25,7 +25,12 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
   _NewCategoryScreenState({
     required this.addNewCategory,
     this.category,
-  });
+  }) {
+    if (category == null) return;
+
+    color = category!.color;
+    categoryName = category!.title;
+  }
 
   void _handleSetColor(Color newColor) {
     setState(() {
@@ -68,6 +73,10 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
 
     var uuid = Uuid();
     String id = uuid.v4();
+
+    if (category != null) {
+      id = category!.id;
+    }
 
     CategoryModel newCategory = CategoryModel(
       id: id,
@@ -147,7 +156,8 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
                   top: 10,
                 ),
               ),
-              TextField(
+              TextFormField(
+                initialValue: categoryName,
                 onChanged: _handleSetValue,
                 decoration: InputDecoration(
                   focusedBorder: OutlineInputBorder(

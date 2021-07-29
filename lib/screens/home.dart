@@ -29,51 +29,9 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       categories = [
         CategoryModel(
-          id: 'a',
+          id: 'inbox-category-id',
           title: "Inbox",
           color: HexColor("#61DEA4"),
-        ),
-        CategoryModel(
-          id: 'b',
-          title: "Shopping",
-          color: HexColor("#B678FF"),
-        ),
-        CategoryModel(
-          id: 'c',
-          title: "Family",
-          color: HexColor("#F45E6D"),
-        ),
-        CategoryModel(
-          id: 'd',
-          title: "Personal",
-          color: HexColor("#FFE761"),
-        ),
-      ];
-
-      tasks = [
-        TaskModel(
-          id: 'a',
-          title: "Start making a presentation",
-          isActive: false,
-          category: categories.first,
-        ),
-        TaskModel(
-          id: 'b',
-          title: "Start making",
-          isActive: false,
-          category: categories.first,
-        ),
-        TaskModel(
-          id: 'c',
-          title: "Start Reading",
-          isActive: false,
-          category: categories.first,
-        ),
-        TaskModel(
-          id: 'd',
-          title: "Start making a presentation",
-          isActive: false,
-          category: categories.first,
         ),
       ];
     });
@@ -81,7 +39,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _addNewCategoryHandler(CategoryModel newCategory) {
     setState(() {
-      categories.add(newCategory);
+      var findCategoryIndex =
+          categories.indexWhere((category) => category.id == newCategory.id);
+
+      if (findCategoryIndex == -1) {
+        categories.add(newCategory);
+        return;
+      }
+
+      categories[findCategoryIndex] = newCategory;
     });
   }
 
@@ -96,7 +62,13 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _handleDeleteTask(int index) {
+  void _handleInsertTask(int index, TaskModel insertedTask) {
+    setState(() {
+      tasks.insert(index, insertedTask);
+    });
+  }
+
+  void _handleDeleteTask(int index, bool notShowSnackBar) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
     TaskModel removedTask = tasks[index];
@@ -105,16 +77,15 @@ class _HomeScreenState extends State<HomeScreen> {
       tasks.removeAt(index);
     });
 
+    if (notShowSnackBar) return;
+
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       duration: Duration(seconds: 3),
       content: ElevatedButton(
         onPressed: () {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
-          setState(() {
-            tasks.insert(index, removedTask);
-            ScaffoldMessenger.of(context);
-          });
+          _handleInsertTask(index, removedTask);
         },
         child: Text(
           "undo",
@@ -153,7 +124,14 @@ class _HomeScreenState extends State<HomeScreen> {
       MaterialPageRoute(
         builder: (BuildContext context) {
           return DetailsCategoryScreen(
-            cateogry: categories[index],
+            handleInsertTask: _handleInsertTask,
+            category: categories[index],
+            tasks: tasks,
+            addNewCategory: _addNewCategoryHandler,
+            categories: categories,
+            handleAddNewTask: _handleAddNewTask,
+            handleDeleteTask: _handleDeleteTask,
+            handleSwitchActiveTask: _handleSwitchActiveTask,
           );
         },
       ),
@@ -193,9 +171,34 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _NewestTodo() {
+    if (tasks.length < 1) {
+      return Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: 19,
+        ),
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            vertical: 15,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.amberAccent[100],
+            borderRadius: BorderRadius.circular(15),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            "No task for show",
+            style: TextStyle(
+              fontSize: 18,
+            ),
+          ),
+        ),
+      );
+    }
+
     return ListView.builder(
       itemCount: tasks.length,
       shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
       itemBuilder: (BuildContext context, int index) {
         return TaskCard(
           tasks: tasks,
@@ -205,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
           isActive: tasks[index].isActive,
           title: tasks[index].title,
           onTap: () => {_handleSwitchActiveTask(index)},
-          onRemoveTask: () => {_handleDeleteTask(index)},
+          onRemoveTask: () => {_handleDeleteTask(index, false)},
           addNewTask: _handleAddNewTask,
         );
       },
@@ -241,6 +244,7 @@ class _HomeScreenState extends State<HomeScreen> {
           GridView.builder(
             itemCount: categories.length,
             shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
             gridDelegate:
                 SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
               crossAxisCount: 2,
@@ -262,7 +266,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               );
             },
-          )
+          ),
+          Padding(
+            padding: EdgeInsets.only(
+              bottom: 15,
+            ),
+          ),
         ],
       ),
     );

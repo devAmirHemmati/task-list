@@ -10,8 +10,10 @@ class NewTaskScreen extends StatefulWidget {
   late List<TaskModel> tasks;
   late List<CategoryModel> categories;
   Function(TaskModel cm) addNewTask;
+  String activeCategoryId;
 
   NewTaskScreen({
+    this.activeCategoryId = '',
     required this.categories,
     required this.addNewTask,
     required this.tasks,
@@ -23,6 +25,7 @@ class NewTaskScreen extends StatefulWidget {
         task: task,
         addNewTask: addNewTask,
         tasks: tasks,
+        activeCategoryId: activeCategoryId,
       );
 }
 
@@ -31,12 +34,13 @@ class _NewTaskScreenState extends State {
   late List<CategoryModel> categories;
   late List<TaskModel> tasks;
   Function(TaskModel cm) addNewTask;
+  String activeCategoryId;
 
-  String activeCategoryId = '';
   String description = '';
 
   _NewTaskScreenState({
     this.task,
+    this.activeCategoryId = '',
     required this.categories,
     required this.addNewTask,
     required this.tasks,
@@ -179,17 +183,15 @@ class _NewTaskScreenState extends State {
           ],
         ),
         body: Container(
-          padding: EdgeInsets.only(
-            left: 18,
-            right: 18,
-            top: 18,
-          ),
           child: ListView(
+            padding: EdgeInsets.only(
+              left: 18,
+              right: 18,
+              top: 18,
+            ),
             children: [
-              TextField(
-                controller: TextEditingController(
-                  text: description,
-                ),
+              TextFormField(
+                initialValue: description,
                 keyboardType: TextInputType.multiline,
                 minLines: 8,
                 maxLines: 8,
@@ -211,6 +213,7 @@ class _NewTaskScreenState extends State {
                 ),
               ),
               GridView.builder(
+                physics: NeverScrollableScrollPhysics(),
                 itemCount: categories.length,
                 shrinkWrap: true,
                 gridDelegate:
@@ -246,7 +249,10 @@ class _NewTaskScreenState extends State {
                     ),
                   );
                 },
-              )
+              ),
+              Padding(
+                padding: EdgeInsets.only(bottom: 18),
+              ),
             ],
           ),
         ),
