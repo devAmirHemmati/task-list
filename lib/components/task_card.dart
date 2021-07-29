@@ -109,7 +109,7 @@ class TaskCard extends StatelessWidget {
                           height: 12,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: this._category.color,
+                            color: HexColor(this._category.color),
                           ),
                         ),
                       ],

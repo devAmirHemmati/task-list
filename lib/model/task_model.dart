@@ -13,4 +13,13 @@ class TaskModel {
     required this.isActive,
     required this.category,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      '_id': id,
+      'title': title,
+      'is_active': isActive ? 1 : 0,
+      'category_id': category.id,
+    };
+  }
 }

@@ -18,7 +18,7 @@ class NewCategoryScreen extends StatefulWidget {
 
 class _NewCategoryScreenState extends State<NewCategoryScreen> {
   String categoryName = '';
-  Color color = HexColor("#20bf6b");
+  String color = "#20bf6b";
   CategoryModel? category;
   Function(CategoryModel cm) addNewCategory;
 
@@ -32,7 +32,7 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
     categoryName = category!.title;
   }
 
-  void _handleSetColor(Color newColor) {
+  void _handleSetColor(String newColor) {
     setState(() {
       color = newColor;
     });
@@ -97,7 +97,7 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: color,
+          backgroundColor: HexColor(color),
           automaticallyImplyLeading: false,
           title: Row(
             children: [
@@ -187,7 +187,7 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      _handleSetColor(HexColor("#20bf6b"));
+                      _handleSetColor("#20bf6b");
                     },
                     child: Container(
                       width: 35,
@@ -203,7 +203,7 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      _handleSetColor(HexColor("#F45E6D"));
+                      _handleSetColor("#F45E6D");
                     },
                     child: Container(
                       width: 35,
@@ -219,7 +219,7 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      _handleSetColor(HexColor("#f7b731"));
+                      _handleSetColor("#f7b731");
                     },
                     child: Container(
                       width: 35,
@@ -235,7 +235,7 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      _handleSetColor(HexColor("#4b7bec"));
+                      _handleSetColor("#4b7bec");
                     },
                     child: Container(
                       width: 35,
@@ -251,7 +251,7 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      _handleSetColor(HexColor("#4b6584"));
+                      _handleSetColor("#4b6584");
                     },
                     child: Container(
                       width: 35,

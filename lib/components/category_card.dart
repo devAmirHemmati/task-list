@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 
 class CategoryCard extends StatelessWidget {
-  late Color _color;
+  late String _color;
   late String _title;
   late int _length;
 
   CategoryCard({
-    required Color color,
+    required String color,
     required String title,
     required int lengths,
   }) {
@@ -50,7 +51,7 @@ class CategoryCard extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: this._color,
+        color: HexColor(this._color),
       ),
     );
   }

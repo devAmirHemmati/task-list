@@ -11,16 +11,34 @@ import 'package:my/model/task_model.dart';
 import 'package:my/screens/details_category.dart';
 import 'package:my/screens/new_category.dart';
 import 'package:my/screens/new_task.dart';
+import 'package:my/sqlite/category_sql.dart';
+import 'package:my/sqlite/task_sql.dart';
 
 class HomeScreen extends StatefulWidget {
+  late List<CategoryModel> categories = [];
+  late List<TaskModel> tasks = [];
+
+  HomeScreen({
+    required this.categories,
+    required this.tasks,
+  });
+
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _HomeScreenState createState() => _HomeScreenState(
+        categories: categories,
+        tasks: tasks,
+      );
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   late List<CategoryModel> categories = [];
   late List<TaskModel> tasks = [];
   late bool isActiveFib = false;
+
+  _HomeScreenState({
+    required this.categories,
+    required this.tasks,
+  });
 
   @override
   void initState() {
@@ -30,18 +48,19 @@ class _HomeScreenState extends State<HomeScreen> {
       categories = [
         CategoryModel(
           id: 'inbox-category-id',
-          title: "Inbox",
-          color: HexColor("#61DEA4"),
+          title: 'Inbox',
+          color: '#20bf6b',
         ),
+        ...categories,
       ];
     });
   }
 
-  void _addNewCategoryHandler(CategoryModel newCategory) {
-    setState(() {
-      var findCategoryIndex =
-          categories.indexWhere((category) => category.id == newCategory.id);
+  void _addNewCategoryHandler(CategoryModel newCategory) async {
+    var findCategoryIndex =
+        categories.indexWhere((category) => category.id == newCategory.id);
 
+    setState(() {
       if (findCategoryIndex == -1) {
         categories.add(newCategory);
         return;
@@ -49,6 +68,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
       categories[findCategoryIndex] = newCategory;
     });
+
+    CategorySql db = CategorySql();
+
+    if (findCategoryIndex == -1) {
+      db.addNewCategory(
+        newCategory,
+      );
+      return;
+    }
+
+    db.updateCategory(
+      newCategory,
+    );
   }
 
   Future<bool> _handleWillPop() async {
@@ -56,10 +88,14 @@ class _HomeScreenState extends State<HomeScreen> {
     exit(0);
   }
 
-  void _handleSwitchActiveTask(int index) {
+  void _handleSwitchActiveTask(int index) async {
     setState(() {
       tasks[index].isActive = !tasks[index].isActive;
     });
+
+    TaskSql db = TaskSql();
+
+    await db.updateTask(tasks[index]);
   }
 
   void _handleInsertTask(int index, TaskModel insertedTask) {
@@ -77,30 +113,34 @@ class _HomeScreenState extends State<HomeScreen> {
       tasks.removeAt(index);
     });
 
-    if (notShowSnackBar) return;
+    TaskSql db = TaskSql();
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      duration: Duration(seconds: 3),
-      content: ElevatedButton(
-        onPressed: () {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    db.deleteTask(removedTask.id);
 
-          _handleInsertTask(index, removedTask);
-        },
-        child: Text(
-          "undo",
-          style: TextStyle(
-            color: Colors.black,
-          ),
-        ),
-      ),
-    ));
+    // if (notShowSnackBar) return;
+
+    // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    //   duration: Duration(seconds: 3),
+    //   content: ElevatedButton(
+    //     onPressed: () {
+    //       ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+    //       _handleInsertTask(index, removedTask);
+    //     },
+    //     child: Text(
+    //       "undo",
+    //       style: TextStyle(
+    //         color: Colors.black,
+    //       ),
+    //     ),
+    //   ),
+    // ));
   }
 
-  void _handleAddNewTask(TaskModel newTask) {
-    setState(() {
-      var findTaskIndex = tasks.indexWhere((task) => task.id == newTask.id);
+  void _handleAddNewTask(TaskModel newTask) async {
+    var findTaskIndex = tasks.indexWhere((task) => task.id == newTask.id);
 
+    setState(() {
       if (findTaskIndex == -1) {
         tasks.add(newTask);
         return;
@@ -108,6 +148,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
       tasks[findTaskIndex] = newTask;
     });
+
+    TaskSql db = TaskSql();
+
+    if (findTaskIndex == -1) {
+      db.addNewTask(newTask);
+      return;
+    }
+
+    db.updateTask(newTask);
   }
 
   void _handleSwitchActiveFib() {

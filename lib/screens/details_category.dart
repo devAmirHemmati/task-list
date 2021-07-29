@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:my/components/task_card.dart';
 import 'package:my/model/category_model.dart';
 import 'package:my/model/task_model.dart';
@@ -140,7 +141,7 @@ class _DetailsCategoryScreenState extends State<DetailsCategoryScreen> {
         ),
       ),
       appBar: AppBar(
-        backgroundColor: category.color,
+        backgroundColor: HexColor(category.color),
         automaticallyImplyLeading: false,
         title: Row(
           children: [
