@@ -1,4 +1,4 @@
 # Todo list application with flutter
 
 ## Build Application
-[apk file](https://drive.google.com/file/d/1luWV70G6fNb1J9AdcJbQqmOcqc1ZSW3c/view?usp=sharing)
+[apk file](https://github.com/Dev-Amir/task-list/releases/download/1.0.0/todo-list.apk)
